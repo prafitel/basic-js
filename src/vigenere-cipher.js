@@ -1,4 +1,4 @@
-const { NotImplementedError } = require('../lib');
+const { NotImplementedError } = require("../lib");
 
 /**
  * Implement class VigenereCipheringMachine that allows us to create
@@ -20,14 +20,70 @@ const { NotImplementedError } = require('../lib');
  *
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  constructor(isDirect = true) {
+    this.isDirect = isDirect;
   }
 
-  decrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  encrypt(message, key) {
+    if (message === undefined || key === undefined) {
+      return;
+    }
+
+    const msgUpper = message.toUpperCase();
+    const keyUpper = key.toUpperCase();
+    let result = [];
+    let keyIndex = 0;
+
+    for (let i = 0; i < msgUpper.length; i++) {
+      const charCode = msgUpper.charCodeAt(i);
+
+      if (charCode >= 65 && charCode <= 90) {
+        const msgShift = charCode - 65;
+        const keyShift = keyUpper.charCodeAt(keyIndex % keyUpper.length) - 65;
+
+        const cipherChar = String.fromCharCode(
+          ((msgShift + keyShift) % 26) + 65,
+        );
+        result.push(cipherChar);
+
+        keyIndex++;
+      } else {
+        result.push(msgUpper[i]);
+      }
+    }
+
+    return this.isDirect ? result.join("") : result.reverse().join("");
+  }
+
+  decrypt(encryptedMessage, key) {
+    if (encryptedMessage === undefined || key === undefined) {
+      throw new Error("Incorrect arguments!");
+    }
+
+    const msgUpper = encryptedMessage.toUpperCase();
+    const keyUpper = key.toUpperCase();
+    let result = [];
+    let keyIndex = 0;
+
+    for (let i = 0; i < msgUpper.length; i++) {
+      const charCode = msgUpper.charCodeAt(i);
+
+      if (charCode >= 65 && charCode <= 90) {
+        const msgShift = charCode - 65;
+        const keyShift = keyUpper.charCodeAt(keyIndex % keyUpper.length) - 65;
+
+        const plainChar = String.fromCharCode(
+          ((msgShift - keyShift + 26) % 26) + 65,
+        );
+        result.push(plainChar);
+
+        keyIndex++;
+      } else {
+        result.push(msgUpper[i]);
+      }
+    }
+
+    return this.isDirect ? result.join("") : result.reverse().join("");
   }
 }
 
